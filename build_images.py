@@ -18,7 +18,7 @@ from PIL import Image, ImageOps
 SOURCES = {
     "01_Bluebay": {"slug": "blue-bay", "order": ["3", "4", "2", "1", "5"], "cover": "3"},
     "02_Interlude 1_MV": {"slug": "interlude-01-house-session",
-                          "order": ["DSC01344", "DSC01342", "DSC01349", "DSC01353"], "cover": "DSC01344",
+                          "order": ["DSC01344", "DSC01342", "DSC01349", "DSC01353"], "cover": "DSC01353",
                           "videos": [{"src": "Snippet MV .mp4", "poster": 5}]},
     "03_Microfest": {"slug": "microfest", "order": ["1", "2", "3"], "cover": "3",
                      "videos": [{"src": "Snippet Fest .mp4", "poster": 3, "audio": False},
@@ -40,7 +40,7 @@ SOURCES = {
     "12_Interlude 5_Impasse bis": {"slug": "interlude-05-limpasse-bis",
                                    "order": ["Interlude Hungu(1)", "Interlude Joy(1)", "Interlude Hungu", "Interlude Joy"], "cover": "video-01",
                                    "videos": [{"src": "Snippet Hungu.mp4", "poster": 5}, {"src": "Snippet Joy.mp4", "poster": 5}]},
-    "13_Interlude 6_Wrong side": {"slug": "interlude-06-the-wrong-side", "order": ["DSC02121", "0730(1)", "0730"], "cover": "video-01",
+    "13_Interlude 6_Wrong side": {"slug": "interlude-06-the-wrong-side", "order": ["DSC02121", "0730(1)", "0730"], "cover": "video-03",
                                   "videos": [{"src": "Snippet 1.mp4", "poster": 5}, {"src": "Snippet 2.mp4", "poster": 5},
                                              {"src": "Snippet 3.mp4", "poster": 5}, {"src": "Snippet 4.mp4", "poster": 5},
                                              {"src": "BTS 1.mp4", "poster": 1}]},

@@ -38,16 +38,17 @@ def aspect(item):
 
 # air: gap under a piece (fraction of the narrower width); bite: the occasional light overlap;
 # p_bite: share of pieces that overlap; hpad: minimum side-by-side margin (% of width)
-DESKTOP = dict(widths=(16, 19, 22, 25, 28), bleed=2.0, first=30, target=74, air=(0.12, 0.34), bite=(0.05, 0.12),
-               p_bite=0.3, hpad=2.4, min_vis=0.9, cover=0.40)
-MOBILE  = dict(widths=(38, 44, 50, 56), bleed=1.5, first=60, target=215, air=(0.10, 0.28), bite=(0.04, 0.10),
-               p_bite=0.25, hpad=3.5, min_vis=0.9, cover=0.45)
+DESKTOP = dict(widths=(14, 17, 21, 25, 30, 34), bleed=5.0, first=28, target=78, air=(0.01, 0.08), bite=(0.10, 0.30),
+               p_bite=0.72, hpad=-5.0, min_vis=0.62, cover=0.70)
+MOBILE  = dict(widths=(40, 46, 52, 60), bleed=6.0, first=58, target=250, air=(0.01, 0.06), bite=(0.08, 0.24),
+               p_bite=0.65, hpad=-6.0, min_vis=0.62, cover=0.70)
 
 def scatter(aspects, seed=58, tries=160, widths=DESKTOP["widths"], bleed=2.0, first=30, air=(0.12, 0.34),
             bite=(0.05, 0.12), p_bite=0.3, hpad=2.4, min_vis=0.9, **_):
-    """Airy scattered collage for the hero: pieces of different sizes floating on the paper
-    with clear space between most of them, and an occasional light overlap for the collage
-    feel (Reference.png, loosened at the user's request: "too crowded, let it breathe").
+    """Dense, messy collage for the hero after Reference.png (the user asked on 6 Oct 2026 for
+    all fifteen projects, "more crowded, not organized"): pieces of different sizes piled on
+    one another, most overlapping a neighbour, some bleeding off the sides, small gaps only.
+    `min_vis` keeps enough of every piece visible to read it.
 
     Each piece gets its own random width and its own spacing (a gap, or with probability
     p_bite a small overlap) *before* positions are tried, so choosing the highest free spot
@@ -103,11 +104,16 @@ def evenness(slots, aspects, target, cover=None):
     area = sum(w * h for _, _, w, h in boxes)
     cx = sum((x + w / 2) * w * h for x, _, w, h in boxes) / area
     score = (cov if cover is None else 1 - abs(cov - cover) * 1.6)
-    score -= max(0, 0.32 - min(quads)) * 2.2 + abs(cx - 50) / 60 + abs(bottom - target) / (target * 3.5)
+    inner = [grid[gx][gy] for gx in range(2, GX - 2) for gy in range(1, GY - 1)]
+    score -= max(0, 0.82 - sum(inner) / len(inner)) * 3.0          # no holes in the middle of the pile
+    score -= max(0, 0.55 - min(quads)) * 3.0 + abs(cx - 50) / 60 + abs(bottom - target) / (target * 3.5)
     return score
 
-def best_seed(aspects, params, seeds=range(1, 81)):
-    return max(seeds, key=lambda sd: evenness(scatter(aspects, seed=sd, **params)[0], aspects, params["target"], params.get("cover")))
+def best_seed(aspects, params, seeds=range(1, 241)):
+    def score(sd):
+        slots, vis = scatter(aspects, seed=sd, **params)
+        return evenness(slots, aspects, params["target"], params.get("cover")) - max(0, 0.8 - min(vis)) * 4   # nobody buried
+    return max(seeds, key=score)
 
 def compose(aspects, hero=False):
     n = len(aspects)
