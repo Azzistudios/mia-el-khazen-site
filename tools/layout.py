@@ -23,7 +23,7 @@ from PIL import Image
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
-GUT = 4.5                     # the one gutter under every piece of every project, % of collage width
+GUT = 2.2                     # the one gutter under every piece of every project, % of collage width (tightened 8 Oct 2026: "too separated")
 html = open("index.html").read()
 LAY = "tools/layouts.json"
 layouts = json.load(open(LAY)) if os.path.exists(LAY) else {}
@@ -137,9 +137,9 @@ def best_seed(aspects, params, seeds=range(1, 241)):
 def width_for(a, lead=False):
     """Three fixed widths by shape (one more set for the lead) so edges line up across projects
     and every piece reads at a similar height whatever its aspect."""
-    if a < 0.8:   return 38 if lead else 30      # portrait
-    if a < 1.2:   return 50 if lead else 40      # square-ish
-    return 66 if lead else 52                    # landscape, clips
+    if a < 0.8:   return 40 if lead else 36      # portrait
+    if a < 1.2:   return 54 if lead else 46      # square-ish
+    return 70 if lead else 58                    # landscape, clips
 
 def compose(aspects, hero=False):
     """Editorial stack: one piece per row (never side by side), the lead flush left and wide,
