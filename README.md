@@ -2,8 +2,8 @@
 
 Single-page portfolio for Mia El Khazen, architect and production
 designer in Paris. Built from the brief in `brief/Website.pdf`:
-grid-paper hero with a scattered image collage, About section with
-portrait, then a vivid-blue run of fifteen project blocks.
+paper hero with a dense collage of all fifteen project covers, a
+text-only About section, then a vivid-blue run of fifteen project blocks.
 
 ## Local development
 
@@ -35,11 +35,13 @@ size. Then:
    `"cover": "video-01"` uses that clip's poster as the hero image.
    Long recordings get `data-autoplay="off"` in the HTML so they only
    play on request (see The Fridge's full concert).
-3. Run `python3 tools/layout.py`. It composes each collage: the first
-   item leads in a wide column, the rest fall into staggered columns with
-   a constant gutter, every slot at the exact aspect ratio of its photo or
-   clip (nothing is ever cropped), and the CSS between the `LAYOUTS`
-   markers in `index.html` is regenerated. The result is recorded in
+3. Run `python3 tools/layout.py`. It composes each project collage as an
+   editorial stack: one piece per row, never two side by side, the lead
+   wide and flush left, the rest zigzagging flush right / flush left at a
+   few fixed widths, with the same gutter under every piece in every
+   project; every slot keeps the exact aspect ratio of its photo or clip
+   (nothing is ever cropped), and the CSS between the `LAYOUTS` markers
+   in `index.html` is regenerated. The result is recorded in
    `tools/layouts.json`; to place a project by hand, set `"manual": true`
    on its key and edit the slots, then run the tool again. The tool also
    inserts the video buttons, so re-run it whenever
@@ -50,16 +52,17 @@ size. Then:
 Source folders, `brief/` and `shots/` are excluded from deploys by
 `.vercelignore`. Missing images simply leave a grey slot.
 
-The hero is an airy scattered collage of nine project covers, each linking to its project and showing its `cover.jpg`,
-or its `01.jpg` if there is no cover. Desktop and phones get their own
+The hero is a dense, messy pile of all fifteen project covers, each linking to its project and showing its `cover.jpg`,
+or its `01.jpg` if there is no cover: pieces of contrasting sizes sit on one another, some bleed off the sides,
+and x positions snap to a loose grid so it reads as composed rather than random. Desktop and phones get their own
 arrangement; run `python3 tools/layout.py --reseed` to reshuffle.
 
 ## Tech
 
 - Vanilla HTML / CSS — no build step, all styles inline in `index.html`
 - Anton + Bebas Neue from Google Fonts (the two faces embedded in the brief)
-- Flat paper background with a CSS/SVG grain; on phones, project collages flow in two columns with
-  full-width videos, while the hero keeps its own overlapping arrangement
+- Flat paper background with a CSS/SVG grain; on phones, project collages keep the same one-per-row
+  zigzag stack (clips full width), while the hero keeps its own overlapping arrangement
 - Slim top bar that appears once the hero scrolls away, numbered project headers, a gentle reveal on
   scroll (off under reduced motion), and a footer with email, phone and back-to-top
 - Colours and type rules: `brand_assets/COLOURS.md`
