@@ -67,8 +67,6 @@ arrangement; run `python3 tools/layout.py --reseed` to reshuffle.
 
 ## Still to do
 
-- Point miaelkhazen.com at Vercel in GoDaddy DNS (A `@` → the IP Vercel shows, usually
-  `76.76.21.21`; CNAME `www` → `cname.vercel-dns.com`). Canonical, share image and sitemap are done.
 - All fifteen projects have their media in place (8 Sep 2026). Self-hosted video now totals ~200 MB; if the site
   grows further, move the clips to a video host (e.g. Cloudinary) and keep the slots as they are
 - Social links (Instagram etc.) if wanted — the footer has email and phone
