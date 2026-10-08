@@ -4,16 +4,16 @@ photo or clip keeps its exact aspect ratio (nothing is ever cropped).
 
     python3 tools/layout.py
 
-How a collage is built (per project, and the hero):
-  • columns: 2 for up to five items (a wide lead column and a narrower one), 3 for six or
-    more; the first item is the lead and spans the wide column (or two columns when there
-    are six or more), so the video or key photo reads first;
-  • each following item goes to the column that currently ends highest (masonry), with the
-    columns starting at different heights and items alternating between full and slightly
-    narrower widths, which gives the deliberate scatter of the brief without holes;
+How a project collage is built (the user's 8 Oct 2026 note: "same gutter in every section,
+well spaced, medias not side by side, more aligned"):
+  • an editorial stack: one piece per row, never two side by side; the lead sits flush left
+    at a wide width, the rest alternate flush right / flush left at one of three fixed widths
+    (landscape, square, portrait) so edges line up from project to project;
+  • the same gutter (GUT) separates every piece in every project;
   • the result is written as absolute positions (left / top / width in % of the collage
     width) into the CSS between the LAYOUTS markers, and each slot gets
     style="aspect-ratio:W/H" from its own file so its height follows its media.
+The hero is different: scatter() piles all fifteen covers on one another (see its docstring).
 tools/layouts.json records the generated slots; set "manual": true on a key and edit its
 slots to take over by hand. Also inserts the sound / play buttons.
 Run after build_images.py, and after editing layouts.json.
@@ -23,7 +23,7 @@ from PIL import Image
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.chdir(ROOT)
-GUT = 3.4                     # gutter, % of collage width
+GUT = 4.5                     # the one gutter under every piece of every project, % of collage width
 html = open("index.html").read()
 LAY = "tools/layouts.json"
 layouts = json.load(open(LAY)) if os.path.exists(LAY) else {}
@@ -36,39 +36,58 @@ def aspect(item):
     w, h = Image.open(path).size
     return w / h, f"{w}/{h}"
 
-# air: gap under a piece (fraction of the narrower width); bite: the occasional light overlap;
-# p_bite: share of pieces that overlap; hpad: minimum side-by-side margin (% of width)
-DESKTOP = dict(widths=(14, 17, 21, 25, 30, 34), bleed=5.0, first=28, target=78, air=(0.01, 0.08), bite=(0.10, 0.30),
-               p_bite=0.72, hpad=-5.0, min_vis=0.62, cover=0.70)
-MOBILE  = dict(widths=(40, 46, 52, 60), bleed=6.0, first=58, target=250, air=(0.01, 0.06), bite=(0.08, 0.24),
-               p_bite=0.65, hpad=-6.0, min_vis=0.62, cover=0.70)
+# air: gap under a piece (fraction of the narrower width); bite: how far a piece sits on the one
+# below (fraction of the narrower width); p_bite: share of pieces that overlap; hpad: pieces
+# closer than this side by side count as stacked; jitter: how far the top row drifts off one line;
+# snap: x positions sit on this grid so edges line up now and then (the editorial part)
+DESKTOP = dict(widths=(10, 13, 16, 24, 32, 40), bleed=6.0, first=36, target=70, air=(0.0, 0.05), bite=(0.18, 0.48),
+               p_bite=0.9, hpad=-6.0, min_vis=0.52, cover=0.76, jitter=8.0, snap=3.0)
+MOBILE  = dict(widths=(34, 40, 48, 58, 68), bleed=8.0, first=62, target=230, air=(0.0, 0.05), bite=(0.15, 0.42),
+               p_bite=0.85, hpad=-8.0, min_vis=0.52, cover=0.76, jitter=6.0, snap=4.0)
 
 def scatter(aspects, seed=58, tries=160, widths=DESKTOP["widths"], bleed=2.0, first=30, air=(0.12, 0.34),
-            bite=(0.05, 0.12), p_bite=0.3, hpad=2.4, min_vis=0.9, **_):
+            bite=(0.05, 0.12), p_bite=0.3, hpad=2.4, min_vis=0.9, jitter=0.0, snap=0.0, **_):
     """Dense, messy collage for the hero after Reference.png (the user asked on 6 Oct 2026 for
-    all fifteen projects, "more crowded, not organized"): pieces of different sizes piled on
-    one another, most overlapping a neighbour, some bleeding off the sides, small gaps only.
-    `min_vis` keeps enough of every piece visible to read it.
+    all fifteen projects, "more crowded, not organized", and on 8 Oct 2026 for "more messy,
+    pics on each other, but in an editorial way"): pieces of different sizes piled on one
+    another, nearly every one sitting well onto a neighbour, some bleeding off the sides,
+    small gaps only. `min_vis` keeps enough of every piece visible to read it.
+
+    Editorial, not random: a small piece tends to follow (and land on) a big one and vice
+    versa, so the pile has scale contrast; x positions snap to a loose grid so edges line up
+    here and there; the top row drifts (`jitter`) instead of sitting on one line.
 
     Each piece gets its own random width and its own spacing (a gap, or with probability
-    p_bite a small overlap) *before* positions are tried, so choosing the highest free spot
+    p_bite an overlap) *before* positions are tried, so choosing the highest free spot
     cannot quietly favour the tightest spacing. Pieces closer than `hpad` side by side count
     as stacked, so nothing sits flush against a neighbour. Seeds live in tools/layouts.json;
     `--reseed` searches for the most balanced arrangement."""
     rnd = random.Random(seed)
     SX, SY = 6, 4
     placed = []
+    small = widths[:len(widths) // 2]; big = widths[len(widths) // 2:]
+    last = first
     for i, a in enumerate(aspects):
-        w = first if i == 0 else widths[rnd.randrange(len(widths))]
+        if i == 0:
+            w = first
+        else:
+            r = rnd.random()
+            pool = small if (last in big or last == first) and r < 0.7 else big if last in small and r < 0.6 else widths
+            w = pool[rnd.randrange(len(pool))]
+        last = w
         h = w / a
         frac = rnd.uniform(*bite) if rnd.random() < p_bite else -rnd.uniform(*air)   # >0 overlap, <0 air
         best = fallback = None
         for _ in range(tries):
             x = rnd.uniform(-bleed, 100 - w + bleed)
-            y = 0.0
+            if snap:
+                x = round(x / snap) * snap
+            y = rnd.uniform(0, jitter) if jitter else 0.0
             for (px, py, pw, ph, _p) in placed:
                 if x < px + pw + hpad and px < x + w + hpad:
-                    y = max(y, py + ph - min(w, pw) * frac)
+                    # how far it sits onto the piece below, as a share of *that* piece's height:
+                    # a small cover can land well inside a big one, a big one only nips a small one
+                    y = max(y, py + ph - (ph if frac > 0 else min(w, pw)) * frac)
             worst = 1.0
             for (px, py, pw, ph, pts) in placed:
                 if x < px + pw and px < x + w and y < py + ph and py < y + h:
@@ -112,38 +131,26 @@ def evenness(slots, aspects, target, cover=None):
 def best_seed(aspects, params, seeds=range(1, 241)):
     def score(sd):
         slots, vis = scatter(aspects, seed=sd, **params)
-        return evenness(slots, aspects, params["target"], params.get("cover")) - max(0, 0.8 - min(vis)) * 4   # nobody buried
+        return evenness(slots, aspects, params["target"], params.get("cover")) - max(0, 0.6 - min(vis)) * 4   # nobody buried
     return max(seeds, key=score)
 
+def width_for(a, lead=False):
+    """Three fixed widths by shape (one more set for the lead) so edges line up across projects
+    and every piece reads at a similar height whatever its aspect."""
+    if a < 0.8:   return 38 if lead else 30      # portrait
+    if a < 1.2:   return 50 if lead else 40      # square-ish
+    return 66 if lead else 52                    # landscape, clips
+
 def compose(aspects, hero=False):
-    n = len(aspects)
-    if n == 1:
-        return [(0, 0, 66)], None
-    if n <= 5:
-        cols = [(0, 60), (60 + GUT, 100 - 60 - GUT)]
-        starts = [0, 7]; lead_span = 1
-    else:
-        w1, w2 = 33, 29.2
-        cols = [(0, w1), (w1 + GUT, w2), (w1 + GUT + w2 + GUT, 100 - (w1 + GUT + w2 + GUT))]
-        starts = [0, 6, 3]; lead_span = 2
-    bottoms = list(starts)
+    """Editorial stack: one piece per row (never side by side), the lead flush left and wide,
+    the rest zigzagging flush right / flush left, the same GUT under each. See the module doc."""
     slots = []
+    top = 0.0
     for i, a in enumerate(aspects):
-        if i == 0 and lead_span:
-            left = cols[0][0]; width = (cols[lead_span - 1][0] + cols[lead_span - 1][1]) - left
-            top = 0; h = width / a
-            for c in range(lead_span): bottoms[c] = top + h + GUT
-            slots.append((left, top, width)); continue
-        c = min(range(len(cols)), key=lambda k: (bottoms[k], k))
-        left, cw = cols[c]
-        # alternate full / slightly narrower widths for a hand-placed feel
-        k = sum(1 for s in slots if abs(s[0] - left) < 0.01 or (left < s[0] < left + cw))
-        width = cw if (k % 2 == 0 or n <= 3) else cw * 0.86
-        if width != cw and (c == len(cols) - 1 or (i % 2)):
-            left = left + (cw - width)          # push narrower items to the column's far edge sometimes
-        top = bottoms[c]
-        bottoms[c] = top + width / a + GUT
-        slots.append((left, top, width))
+        w = width_for(a, lead=(i == 0))
+        left = 0 if i % 2 == 0 else 100 - w
+        slots.append((left, top, w))
+        top += w / a + GUT
     return slots, None
 
 def solve(slots, aspects):
@@ -185,7 +192,7 @@ def rebuild(collage_html, key, class_name, hero=False):
         bm, pos_m = place(m_slots)
         vis_d = scatter(A, seed=spec["seed"], **DESKTOP)[1]; vis_m = scatter(A, seed=spec["seed_m"], **MOBILE)[1]
         print(f"hero: least-visible picture {min(vis_d):.0%} on desktop, {min(vis_m):.0%} on phones")
-        css_m.append(f"  .{class_name}{{columns:auto;aspect-ratio:100/{bm:.2f}}}")
+        css_m.append(f"  .{class_name}{{display:block;aspect-ratio:100/{bm:.2f}}}")
         css_m.append(f"  .{class_name}>.ph{{position:absolute;margin:0}}")
         for i, (l, t, w) in enumerate(pos_m, 1):
             css_m.append(f"  .{class_name} .ph:nth-child({i}){{left:{l:.2f}%;top:{t:.2f}%;width:{w:.2f}%}}")
