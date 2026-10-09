@@ -52,10 +52,10 @@ size. Then:
 Source folders, `brief/` and `shots/` are excluded from deploys by
 `.vercelignore`. Missing images simply leave a grey slot.
 
-The hero is a dense, messy pile of all fifteen project covers, each linking to its project and showing its `cover.jpg`,
-or its `01.jpg` if there is no cover: pieces of contrasting sizes sit on one another, some bleed off the sides,
-and x positions snap to a loose grid so it reads as composed rather than random. Desktop and phones get their own
-arrangement; run `python3 tools/layout.py --reseed` to reshuffle.
+The hero is a free scatter of all fifteen projects, each piece linking to its project: eleven show their `cover.jpg`
+(or `01.jpg` if there is no cover) and four are muted clips that play while in view. Small-to-medium pieces are thrown
+over a canvas nearly as tall as it is wide, with air between most of them, a few sitting on a neighbour's corner and
+some running off the sides. Desktop and phones get their own arrangement; run `python3 tools/layout.py --reseed` to reshuffle.
 
 ## Tech
 

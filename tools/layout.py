@@ -13,7 +13,7 @@ well spaced, medias not side by side, more aligned"):
   • the result is written as absolute positions (left / top / width in % of the collage
     width) into the CSS between the LAYOUTS markers, and each slot gets
     style="aspect-ratio:W/H" from its own file so its height follows its media.
-The hero is different: scatter() piles all fifteen covers on one another (see its docstring).
+The hero is different: freeform() throws all fifteen covers and clips over a tall canvas (see its docstring).
 tools/layouts.json records the generated slots; set "manual": true on a key and edit its
 slots to take over by hand. Also inserts the sound / play buttons.
 Run after build_images.py, and after editing layouts.json.
@@ -36,34 +36,28 @@ def aspect(item):
     w, h = Image.open(path).size
     return w / h, f"{w}/{h}"
 
-# air: gap under a piece (fraction of the narrower width); bite: how far a piece sits on the one
-# below (fraction of the narrower width); p_bite: share of pieces that overlap; hpad: pieces
-# closer than this side by side count as stacked; jitter: how far the top row drifts off one line;
-# snap: x positions sit on this grid so edges line up now and then (the editorial part)
-DESKTOP = dict(widths=(10, 13, 16, 24, 32, 40), bleed=6.0, first=36, target=70, air=(0.0, 0.05), bite=(0.18, 0.48),
-               p_bite=0.9, hpad=-6.0, min_vis=0.52, cover=0.76, jitter=8.0, snap=3.0)
-MOBILE  = dict(widths=(34, 40, 48, 58, 68), bleed=8.0, first=62, target=230, air=(0.0, 0.05), bite=(0.15, 0.42),
-               p_bite=0.85, hpad=-8.0, min_vis=0.52, cover=0.76, jitter=6.0, snap=4.0)
+# Hero after yasminaaoun.com (Mia, 9 Oct 2026: "the same hero section as this — the disorder of
+# pics and videos and the size"): small-to-medium pieces thrown over a canvas about as tall as it
+# is wide, air between most of them, a few sitting on a neighbour's corner, some running off the
+# sides. widths: sizes to draw from (% of width); first: the lead; height: canvas height (% of
+# width); bleed: how far a piece may run off the sides; gap: the least air between pieces that do
+# not touch; p_touch: share of pieces that sit on a neighbour; bite: how much of the smaller piece
+# such an overlap covers; max_touch: how many neighbours one piece may sit on; cover / inner:
+# what the seed search aims for (share of the canvas covered, share of its middle covered)
+DESKTOP = dict(widths=(11, 13, 15, 18, 21, 24, 28), first=26, height=92, bleed=7.0, gap=1.5, p_touch=0.5,
+               bite=(0.05, 0.3), max_touch=2, min_vis=0.6, cover=0.45, inner=0.5)
+MOBILE  = dict(widths=(26, 30, 34, 40, 46, 54), first=52, height=250, bleed=10.0, gap=2.5, p_touch=0.5,
+               bite=(0.05, 0.3), max_touch=2, min_vis=0.6, cover=0.45, inner=0.5)
 
-def scatter(aspects, seed=58, tries=160, widths=DESKTOP["widths"], bleed=2.0, first=30, air=(0.12, 0.34),
-            bite=(0.05, 0.12), p_bite=0.3, hpad=2.4, min_vis=0.9, jitter=0.0, snap=0.0, **_):
-    """Dense, messy collage for the hero after Reference.png (the user asked on 6 Oct 2026 for
-    all fifteen projects, "more crowded, not organized", and on 8 Oct 2026 for "more messy,
-    pics on each other, but in an editorial way"): pieces of different sizes piled on one
-    another, nearly every one sitting well onto a neighbour, some bleeding off the sides,
-    small gaps only. `min_vis` keeps enough of every piece visible to read it.
-
-    Editorial, not random: a small piece tends to follow (and land on) a big one and vice
-    versa, so the pile has scale contrast; x positions snap to a loose grid so edges line up
-    here and there; the top row drifts (`jitter`) instead of sitting on one line.
-
-    Each piece gets its own random width and its own spacing (a gap, or with probability
-    p_bite an overlap) *before* positions are tried, so choosing the highest free spot
-    cannot quietly favour the tightest spacing. Pieces closer than `hpad` side by side count
-    as stacked, so nothing sits flush against a neighbour. Seeds live in tools/layouts.json;
-    `--reseed` searches for the most balanced arrangement."""
+def freeform(aspects, seed=1, widths=DESKTOP["widths"], first=24, height=100, bleed=7.0, gap=2.0, p_touch=0.45,
+             bite=(0.04, 0.28), max_touch=2, tries=400, **_):
+    """Throw the pieces over the canvas one by one: each gets a width (big and small alternate for
+    contrast), then a random spot that either keeps `gap` of air from everything or, for a
+    p_touch share of them, sits on one or two neighbours' corners by a `bite` share of the
+    smaller piece. Clear pieces prefer a spot with a little room around it (capped, so loose
+    clusters still form). Returns (slots, how much of each piece stays visible under the ones
+    drawn after it). Seeds live in tools/layouts.json; `--reseed` searches for the best."""
     rnd = random.Random(seed)
-    SX, SY = 6, 4
     placed = []
     small = widths[:len(widths) // 2]; big = widths[len(widths) // 2:]
     last = first
@@ -72,43 +66,49 @@ def scatter(aspects, seed=58, tries=160, widths=DESKTOP["widths"], bleed=2.0, fi
             w = first
         else:
             r = rnd.random()
-            pool = small if (last in big or last == first) and r < 0.7 else big if last in small and r < 0.6 else widths
+            pool = small if (last in big or last == first) and r < 0.65 else big if last in small and r < 0.55 else widths
             w = pool[rnd.randrange(len(pool))]
         last = w
         h = w / a
-        frac = rnd.uniform(*bite) if rnd.random() < p_bite else -rnd.uniform(*air)   # >0 overlap, <0 air
-        best = fallback = None
+        touch = i > 0 and rnd.random() < p_touch
+        best = loose = None
         for _ in range(tries):
             x = rnd.uniform(-bleed, 100 - w + bleed)
-            if snap:
-                x = round(x / snap) * snap
-            y = rnd.uniform(0, jitter) if jitter else 0.0
-            for (px, py, pw, ph, _p) in placed:
-                if x < px + pw + hpad and px < x + w + hpad:
-                    # how far it sits onto the piece below, as a share of *that* piece's height:
-                    # a small cover can land well inside a big one, a big one only nips a small one
-                    y = max(y, py + ph - (ph if frac > 0 else min(w, pw)) * frac)
-            worst = 1.0
-            for (px, py, pw, ph, pts) in placed:
-                if x < px + pw and px < x + w and y < py + ph and py < y + h:
-                    vis = sum(1 for (qx, qy, hid) in pts if not hid and not (x <= qx <= x + w and y <= qy <= y + h))
-                    worst = min(worst, vis / len(pts))
-            score = y + rnd.uniform(0, 2.0)
-            if worst >= min_vis:
-                if best is None or score < best[0]:
-                    best = (score, x, y)
-            elif fallback is None or worst > fallback[0]:
-                fallback = (worst, x, y)
-        _, x, y = best or fallback
-        for (_x, _y, _w, _h, pts) in placed:
-            for q in pts:
-                if not q[2] and x <= q[0] <= x + w and y <= q[1] <= y + h:
-                    q[2] = True
-        pts = [[x + (gx + .5) * w / SX, y + (gy + .5) * h / SY, False] for gx in range(SX) for gy in range(SY)]
-        placed.append((x, y, w, h, pts))
-    return [(x, y, w) for (x, y, w, h, _p) in placed], [sum(not q[2] for q in p) / len(p) for (*_r, p) in placed]
+            y = rnd.uniform(0, max(0.0, height - h))
+            touches, room, ok = 0, 99.0, True
+            for (px, py, pw, ph) in placed:
+                ox = min(x + w, px + pw) - max(x, px); oy = min(y + h, py + ph) - max(y, py)
+                if ox > 0 and oy > 0:
+                    f = ox * oy / min(w * h, pw * ph)
+                    if not (bite[0] <= f <= bite[1]):
+                        ok = False; break
+                    touches += 1
+                else:
+                    g = max(-ox, -oy)
+                    if g < gap:
+                        ok = False; break
+                    room = min(room, g)
+            if not ok or touches > max_touch:
+                continue
+            score = min(room, 4.0) + rnd.uniform(0, 4.0)
+            if (touches > 0) == touch:
+                if best is None or score > best[0]: best = (score, x, y)
+            elif loose is None or score > loose[0]:
+                loose = (score, x, y)
+        if best is None and loose is None:
+            x, y = rnd.uniform(0, 100 - w), rnd.uniform(0, max(0.0, height - h))    # no spot obeys the rules: drop it anywhere
+        else:
+            _, x, y = best or loose
+        placed.append((x, y, w, h))
+    SX, SY = 6, 4
+    vis = []
+    for i, (x, y, w, h) in enumerate(placed):
+        pts = [(x + (gx + .5) * w / SX, y + (gy + .5) * h / SY) for gx in range(SX) for gy in range(SY)]
+        hid = sum(1 for (qx, qy) in pts if any(px <= qx <= px + pw and py <= qy <= py + ph for (px, py, pw, ph) in placed[i + 1:]))
+        vis.append(1 - hid / len(pts))
+    return [(x, y, w) for (x, y, w, h) in placed], vis
 
-def evenness(slots, aspects, target, cover=None):
+def evenness(slots, aspects, target, cover=None, inner_min=0.82):
     """How good an arrangement looks, higher is better: coverage close to `cover` (so there is
     air but no big holes), every quarter of the collage used, picture mass centred left to
     right, and a height close to `target` (in % of width)."""
@@ -124,14 +124,16 @@ def evenness(slots, aspects, target, cover=None):
     cx = sum((x + w / 2) * w * h for x, _, w, h in boxes) / area
     score = (cov if cover is None else 1 - abs(cov - cover) * 1.6)
     inner = [grid[gx][gy] for gx in range(2, GX - 2) for gy in range(1, GY - 1)]
-    score -= max(0, 0.82 - sum(inner) / len(inner)) * 3.0          # no holes in the middle of the pile
-    score -= max(0, 0.55 - min(quads)) * 3.0 + abs(cx - 50) / 60 + abs(bottom - target) / (target * 3.5)
+    score -= max(0, inner_min - sum(inner) / len(inner)) * 3.0     # no hole in the middle
+    qmin = 0.55 if cover is None else cover * 0.75
+    score -= max(0, qmin - min(quads)) * 3.0 + abs(cx - 50) / 60 + abs(bottom - target) / (target * 3.5)
     return score
 
-def best_seed(aspects, params, seeds=range(1, 241)):
+def best_seed(aspects, params, seeds=range(1, 201)):
     def score(sd):
-        slots, vis = scatter(aspects, seed=sd, **params)
-        return evenness(slots, aspects, params["target"], params.get("cover")) - max(0, 0.6 - min(vis)) * 4   # nobody buried
+        slots, vis = freeform(aspects, seed=sd, **params)
+        return (evenness(slots, aspects, params["height"], params.get("cover"), params.get("inner", 0.82))
+                - max(0, params.get("min_vis", 0.6) - min(vis)) * 4)          # nobody buried
     return max(seeds, key=score)
 
 def width_for(a, lead=False):
@@ -180,8 +182,8 @@ def rebuild(collage_html, key, class_name, hero=False):
     if hero:
         if RESEED or "seed" not in spec:
             spec["seed"], spec["seed_m"] = best_seed(A, DESKTOP), best_seed(A, MOBILE)
-        slots, _ = scatter(A, seed=spec["seed"], **DESKTOP)
-        m_slots, _ = scatter(A, seed=spec["seed_m"], **MOBILE)
+        slots, vis_d = freeform(A, seed=spec["seed"], **DESKTOP)
+        m_slots, vis_m = freeform(A, seed=spec["seed_m"], **MOBILE)
         spec["slots"] = [{"left": round(l, 2), "top": round(t, 2), "width": round(w, 2)} for l, t, w in slots]
         spec["slots_m"] = [{"left": round(l, 2), "top": round(t, 2), "width": round(w, 2)} for l, t, w in m_slots]
         spec["manual"] = False
@@ -190,8 +192,7 @@ def rebuild(collage_html, key, class_name, hero=False):
             return b, [(l, t / b * 100, w) for (l, t, w) in sl]
         bottom, pos = place(slots)
         bm, pos_m = place(m_slots)
-        vis_d = scatter(A, seed=spec["seed"], **DESKTOP)[1]; vis_m = scatter(A, seed=spec["seed_m"], **MOBILE)[1]
-        print(f"hero: least-visible picture {min(vis_d):.0%} on desktop, {min(vis_m):.0%} on phones")
+        print(f"hero: least-visible piece {min(vis_d):.0%} on desktop, {min(vis_m):.0%} on phones")
         css_m.append(f"  .{class_name}{{display:block;aspect-ratio:100/{bm:.2f}}}")
         css_m.append(f"  .{class_name}>.ph{{position:absolute;margin:0}}")
         for i, (l, t, w) in enumerate(pos_m, 1):
