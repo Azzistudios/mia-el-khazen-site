@@ -3,158 +3,158 @@
   "manual": false,
   "slots": [
    {
-    "left": 27.0,
-    "top": 0.05,
-    "width": 36
+    "left": 47.33,
+    "top": 24.32,
+    "width": 26
    },
    {
-    "left": 6.0,
-    "top": 0.28,
-    "width": 10
+    "left": 64.28,
+    "top": 18.17,
+    "width": 15
    },
    {
-    "left": 81.0,
-    "top": 0.2,
-    "width": 10
+    "left": 63.31,
+    "top": 77.38,
+    "width": 21
    },
    {
-    "left": 57.0,
-    "top": 5.34,
-    "width": 40
+    "left": 38.56,
+    "top": 36.1,
+    "width": 11
    },
    {
-    "left": -6.0,
-    "top": 0.17,
-    "width": 16
+    "left": 51.79,
+    "top": 70.72,
+    "width": 18
    },
    {
-    "left": 6.0,
-    "top": 5.92,
-    "width": 24
+    "left": 6.31,
+    "top": 28.11,
+    "width": 28
    },
    {
-    "left": 96.0,
-    "top": 0.85,
-    "width": 10
+    "left": 68.02,
+    "top": 71.05,
+    "width": 15
    },
    {
-    "left": 6.0,
-    "top": 17.03,
-    "width": 40
+    "left": 56.79,
+    "top": 38.59,
+    "width": 28
    },
    {
-    "left": 93.0,
-    "top": 5.61,
+    "left": 44.13,
+    "top": 77.34,
     "width": 13
    },
    {
-    "left": 6.0,
-    "top": 35.96,
-    "width": 32
+    "left": 81.06,
+    "top": 48.39,
+    "width": 21
    },
    {
-    "left": 33.0,
-    "top": 38.94,
-    "width": 24
+    "left": 49.36,
+    "top": 1.45,
+    "width": 28
    },
    {
-    "left": -6.0,
-    "top": 6.73,
-    "width": 13
+    "left": 14.54,
+    "top": 69.61,
+    "width": 11
    },
    {
-    "left": 66.0,
-    "top": 44.97,
-    "width": 24
+    "left": 13.5,
+    "top": 2.48,
+    "width": 28
    },
    {
-    "left": -3.0,
-    "top": 48.19,
-    "width": 40
+    "left": 36.82,
+    "top": 56.74,
+    "width": 15
    },
    {
-    "left": 84.0,
-    "top": 37.22,
-    "width": 16
+    "left": 4.79,
+    "top": 49.39,
+    "width": 28
    }
   ],
-  "seed": 211,
-  "seed_m": 45,
+  "seed": 23,
+  "seed_m": 195,
   "slots_m": [
    {
-    "left": 28.0,
-    "top": 0.34,
-    "width": 62
+    "left": 57.35,
+    "top": 125.88,
+    "width": 52
    },
    {
-    "left": -4.0,
-    "top": 1.25,
-    "width": 34
+    "left": 49.09,
+    "top": 101.77,
+    "width": 46
    },
    {
-    "left": 4.0,
-    "top": 42.9,
-    "width": 58
+    "left": 40.5,
+    "top": 91.88,
+    "width": 26
    },
    {
-    "left": 60.0,
-    "top": 32.04,
-    "width": 34
+    "left": 13.66,
+    "top": 18.72,
+    "width": 46
    },
    {
-    "left": 56.0,
-    "top": 66.23,
-    "width": 34
+    "left": 12.94,
+    "top": 117.8,
+    "width": 54
    },
    {
-    "left": 16.0,
-    "top": 81.67,
-    "width": 48
-   },
-   {
-    "left": 60.0,
-    "top": 87.01,
+    "left": 47.14,
+    "top": 12.98,
     "width": 40
    },
    {
-    "left": -4.0,
-    "top": 106.39,
+    "left": -5.03,
+    "top": 113.58,
+    "width": 30
+   },
+   {
+    "left": 6.79,
+    "top": 212.59,
     "width": 40
    },
    {
-    "left": 28.0,
-    "top": 104.48,
+    "left": 43.02,
+    "top": 167.84,
+    "width": 26
+   },
+   {
+    "left": 67.25,
+    "top": 219.39,
+    "width": 30
+   },
+   {
+    "left": 29.05,
+    "top": 190.92,
+    "width": 54
+   },
+   {
+    "left": -9.4,
+    "top": 162.17,
+    "width": 30
+   },
+   {
+    "left": 25.62,
+    "top": 157.89,
+    "width": 26
+   },
+   {
+    "left": 79.83,
+    "top": 47.84,
+    "width": 30
+   },
+   {
+    "left": -6.14,
+    "top": 79.25,
     "width": 40
-   },
-   {
-    "left": 48.0,
-    "top": 119.98,
-    "width": 48
-   },
-   {
-    "left": 4.0,
-    "top": 126.99,
-    "width": 40
-   },
-   {
-    "left": 44.0,
-    "top": 140.95,
-    "width": 34
-   },
-   {
-    "left": 28.0,
-    "top": 156.53,
-    "width": 68
-   },
-   {
-    "left": -4.0,
-    "top": 146.78,
-    "width": 40
-   },
-   {
-    "left": 16.0,
-    "top": 183.18,
-    "width": 68
    }
   ]
  },
@@ -163,27 +163,27 @@
    {
     "left": 0,
     "top": 0.0,
-    "width": 66
+    "width": 70
    },
    {
-    "left": 48,
-    "top": 48.47,
-    "width": 52
-   },
-   {
-    "left": 0,
-    "top": 87.62,
-    "width": 30
-   },
-   {
-    "left": 70,
-    "top": 137.15,
-    "width": 30
+    "left": 42,
+    "top": 48.84,
+    "width": 58
    },
    {
     "left": 0,
-    "top": 184.05,
-    "width": 52
+    "top": 89.68,
+    "width": 36
+   },
+   {
+    "left": 64,
+    "top": 145.91,
+    "width": 36
+   },
+   {
+    "left": 0,
+    "top": 199.0,
+    "width": 58
    }
   ],
   "manual": false
@@ -193,27 +193,27 @@
    {
     "left": 0,
     "top": 0.0,
-    "width": 66
+    "width": 70
    },
    {
-    "left": 60,
-    "top": 48.22,
-    "width": 40
-   },
-   {
-    "left": 0,
-    "top": 102.26,
-    "width": 52
-   },
-   {
-    "left": 48,
-    "top": 136.01,
-    "width": 52
+    "left": 54,
+    "top": 48.58,
+    "width": 46
    },
    {
     "left": 0,
-    "top": 169.76,
-    "width": 52
+    "top": 107.75,
+    "width": 58
+   },
+   {
+    "left": 42,
+    "top": 142.57,
+    "width": 58
+   },
+   {
+    "left": 0,
+    "top": 177.4,
+    "width": 58
    }
   ],
   "manual": false
@@ -223,17 +223,17 @@
    {
     "left": 0,
     "top": 0.0,
-    "width": 66
+    "width": 70
    },
    {
-    "left": 48,
-    "top": 41.62,
-    "width": 52
+    "left": 42,
+    "top": 41.58,
+    "width": 58
    },
    {
     "left": 0,
-    "top": 84.92,
-    "width": 52
+    "top": 87.04,
+    "width": 58
    }
   ],
   "manual": false
@@ -243,32 +243,32 @@
    {
     "left": 0,
     "top": 0.0,
-    "width": 66
+    "width": 70
    },
    {
-    "left": 70,
-    "top": 49.17,
-    "width": 30
-   },
-   {
-    "left": 0,
-    "top": 93.71,
-    "width": 52
-   },
-   {
-    "left": 48,
-    "top": 132.85,
-    "width": 52
+    "left": 64,
+    "top": 49.58,
+    "width": 36
    },
    {
     "left": 0,
-    "top": 172.0,
-    "width": 52
+    "top": 99.82,
+    "width": 58
    },
    {
-    "left": 48,
-    "top": 211.14,
-    "width": 52
+    "left": 42,
+    "top": 140.66,
+    "width": 58
+   },
+   {
+    "left": 0,
+    "top": 181.51,
+    "width": 58
+   },
+   {
+    "left": 42,
+    "top": 222.35,
+    "width": 58
    }
   ],
   "manual": false
@@ -278,32 +278,32 @@
    {
     "left": 0,
     "top": 0.0,
-    "width": 66
+    "width": 70
    },
    {
-    "left": 48,
-    "top": 38.5,
-    "width": 52
-   },
-   {
-    "left": 0,
-    "top": 77.65,
-    "width": 52
-   },
-   {
-    "left": 48,
-    "top": 116.79,
-    "width": 52
+    "left": 42,
+    "top": 38.26,
+    "width": 58
    },
    {
     "left": 0,
-    "top": 155.94,
-    "width": 52
+    "top": 79.1,
+    "width": 58
    },
    {
-    "left": 48,
-    "top": 195.08,
-    "width": 52
+    "left": 42,
+    "top": 119.95,
+    "width": 58
+   },
+   {
+    "left": 0,
+    "top": 160.79,
+    "width": 58
+   },
+   {
+    "left": 42,
+    "top": 201.63,
+    "width": 58
    }
   ],
   "manual": false
@@ -313,22 +313,17 @@
    {
     "left": 0,
     "top": 0.0,
-    "width": 66
+    "width": 70
    },
    {
-    "left": 48,
-    "top": 48.51,
-    "width": 52
+    "left": 42,
+    "top": 48.88,
+    "width": 58
    },
    {
     "left": 0,
-    "top": 87.69,
-    "width": 52
-   },
-   {
-    "left": 48,
-    "top": 128.24,
-    "width": 52
+    "top": 89.76,
+    "width": 58
    }
   ],
   "manual": false
@@ -338,12 +333,12 @@
    {
     "left": 0,
     "top": 0.0,
-    "width": 50
+    "width": 54
    },
    {
-    "left": 48,
-    "top": 65.62,
-    "width": 52
+    "left": 42,
+    "top": 68.2,
+    "width": 58
    }
   ],
   "manual": false
@@ -353,22 +348,17 @@
    {
     "left": 0,
     "top": 0.0,
-    "width": 66
+    "width": 70
    },
    {
-    "left": 48,
-    "top": 48.51,
-    "width": 52
+    "left": 42,
+    "top": 48.88,
+    "width": 58
    },
    {
     "left": 0,
-    "top": 87.69,
-    "width": 52
-   },
-   {
-    "left": 48,
-    "top": 126.87,
-    "width": 52
+    "top": 89.76,
+    "width": 58
    }
   ],
   "manual": false
@@ -378,17 +368,17 @@
    {
     "left": 0,
     "top": 0.0,
-    "width": 66
+    "width": 70
    },
    {
-    "left": 48,
-    "top": 41.62,
-    "width": 52
+    "left": 42,
+    "top": 41.58,
+    "width": 58
    },
    {
     "left": 0,
-    "top": 80.8,
-    "width": 52
+    "top": 82.45,
+    "width": 58
    }
   ],
   "manual": false
@@ -398,22 +388,22 @@
    {
     "left": 0,
     "top": 0.0,
-    "width": 66
+    "width": 70
    },
    {
-    "left": 48,
-    "top": 41.62,
-    "width": 52
+    "left": 42,
+    "top": 41.58,
+    "width": 58
    },
    {
     "left": 0,
-    "top": 80.74,
-    "width": 52
+    "top": 82.38,
+    "width": 58
    },
    {
-    "left": 48,
-    "top": 119.92,
-    "width": 52
+    "left": 42,
+    "top": 123.26,
+    "width": 58
    }
   ],
   "manual": false
@@ -423,17 +413,17 @@
    {
     "left": 0,
     "top": 0.0,
-    "width": 66
+    "width": 70
    },
    {
-    "left": 48,
-    "top": 41.62,
-    "width": 52
+    "left": 42,
+    "top": 41.58,
+    "width": 58
    },
    {
     "left": 0,
-    "top": 80.8,
-    "width": 52
+    "top": 82.45,
+    "width": 58
    }
   ],
   "manual": false
@@ -443,17 +433,17 @@
    {
     "left": 0,
     "top": 0.0,
-    "width": 66
+    "width": 70
    },
    {
-    "left": 70,
-    "top": 41.62,
-    "width": 30
+    "left": 64,
+    "top": 41.58,
+    "width": 36
    },
    {
     "left": 0,
-    "top": 84.38,
-    "width": 52
+    "top": 89.69,
+    "width": 58
    }
   ],
   "manual": false
@@ -463,22 +453,17 @@
    {
     "left": 0,
     "top": 0.0,
-    "width": 66
+    "width": 70
    },
    {
-    "left": 48,
-    "top": 41.62,
-    "width": 52
+    "left": 42,
+    "top": 41.58,
+    "width": 58
    },
    {
     "left": 0,
-    "top": 75.38,
-    "width": 52
-   },
-   {
-    "left": 48,
-    "top": 109.12,
-    "width": 52
+    "top": 76.4,
+    "width": 58
    }
   ],
   "manual": false
@@ -488,17 +473,17 @@
    {
     "left": 0,
     "top": 0.0,
-    "width": 66
+    "width": 70
    },
    {
-    "left": 48,
-    "top": 41.62,
-    "width": 52
+    "left": 42,
+    "top": 41.58,
+    "width": 58
    },
    {
     "left": 0,
-    "top": 75.38,
-    "width": 52
+    "top": 76.4,
+    "width": 58
    }
   ],
   "manual": false
@@ -508,22 +493,22 @@
    {
     "left": 0,
     "top": 0.0,
-    "width": 66
+    "width": 70
    },
    {
-    "left": 48,
-    "top": 41.62,
-    "width": 52
+    "left": 42,
+    "top": 41.58,
+    "width": 58
    },
    {
     "left": 0,
-    "top": 75.38,
-    "width": 52
+    "top": 76.4,
+    "width": 58
    },
    {
-    "left": 48,
-    "top": 118.88,
-    "width": 52
+    "left": 42,
+    "top": 122.1,
+    "width": 58
    }
   ],
   "manual": false
