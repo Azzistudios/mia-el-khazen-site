@@ -180,13 +180,20 @@ def rebuild(collage_html, key, class_name, hero=False):
     spec = layouts.setdefault(key, {})
     A = [a for a, _ in asp]
     if hero:
-        if RESEED or "seed" not in spec:
-            spec["seed"], spec["seed_m"] = best_seed(A, DESKTOP), best_seed(A, MOBILE)
-        slots, vis_d = freeform(A, seed=spec["seed"], **DESKTOP)
-        m_slots, vis_m = freeform(A, seed=spec["seed_m"], **MOBILE)
-        spec["slots"] = [{"left": round(l, 2), "top": round(t, 2), "width": round(w, 2)} for l, t, w in slots]
-        spec["slots_m"] = [{"left": round(l, 2), "top": round(t, 2), "width": round(w, 2)} for l, t, w in m_slots]
-        spec["manual"] = False
+        n = len(items)
+        if not RESEED and spec.get("manual") and len(spec.get("slots", [])) == n and len(spec.get("slots_m", [])) == n:
+            # placed by hand in layouts.json (e.g. Mia's 10 Oct 2026 nudge of one phone piece): keep as is
+            slots = [(s["left"], s["top"], s["width"]) for s in spec["slots"]]
+            m_slots = [(s["left"], s["top"], s["width"]) for s in spec["slots_m"]]
+            vis_d = vis_m = [1.0]
+        else:
+            if RESEED or "seed" not in spec:
+                spec["seed"], spec["seed_m"] = best_seed(A, DESKTOP), best_seed(A, MOBILE)
+            slots, vis_d = freeform(A, seed=spec["seed"], **DESKTOP)
+            m_slots, vis_m = freeform(A, seed=spec["seed_m"], **MOBILE)
+            spec["slots"] = [{"left": round(l, 2), "top": round(t, 2), "width": round(w, 2)} for l, t, w in slots]
+            spec["slots_m"] = [{"left": round(l, 2), "top": round(t, 2), "width": round(w, 2)} for l, t, w in m_slots]
+            spec["manual"] = False
         def place(sl):                         # keep the deliberate overlaps — no push-down pass
             b = max(t + w / a for (_, t, w), a in zip(sl, A))
             return b, [(l, t / b * 100, w) for (l, t, w) in sl]
@@ -196,7 +203,8 @@ def rebuild(collage_html, key, class_name, hero=False):
         css_m.append(f"  .{class_name}{{display:block;aspect-ratio:100/{bm:.2f}}}")
         css_m.append(f"  .{class_name}>.ph{{position:absolute;margin:0}}")
         for i, (l, t, w) in enumerate(pos_m, 1):
-            css_m.append(f"  .{class_name} .ph:nth-child({i}){{left:{l:.2f}%;top:{t:.2f}%;width:{w:.2f}%}}")
+            z = spec["slots_m"][i - 1].get("z")            # hand-placed pieces may ask to sit in front ("z": 2)
+            css_m.append(f"  .{class_name} .ph:nth-child({i}){{left:{l:.2f}%;top:{t:.2f}%;width:{w:.2f}%{f';z-index:{z}' if z else ''}}}")
     else:
         if spec.get("manual") and len(spec.get("slots", [])) == len(items):
             slots = [(s["left"], s["top"], s["width"]) for s in spec["slots"]]
@@ -221,7 +229,8 @@ def rebuild(collage_html, key, class_name, hero=False):
         out.append("      " + head + body)
     css.append(f"  .{class_name}{{aspect-ratio:100/{bottom:.2f}}}")
     for i, (l, t, w) in enumerate(pos, 1):
-        css.append(f"  .{class_name} .ph:nth-child({i}){{left:{l:.2f}%;top:{t:.2f}%;width:{w:.2f}%}}")
+        z = spec["slots"][i - 1].get("z") if spec.get("manual") else None
+        css.append(f"  .{class_name} .ph:nth-child({i}){{left:{l:.2f}%;top:{t:.2f}%;width:{w:.2f}%{f';z-index:{z}' if z else ''}}}")
     open_tag = re.sub(r'class="collage[^"]*"', f'class="collage {class_name}"', open_tag)
     return open_tag + "\n" + "\n".join(out) + "\n    " + f"</{tag}>"
 
