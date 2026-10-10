@@ -170,6 +170,11 @@ h1,h2{font-weight:400}
 .hero{overflow-x:clip}
 .hero .collage{margin:3.2vw calc(-1 * var(--margin)) 0}   /* full bleed: pieces may run off the sides */
 .collage--hero a.ph:hover,.collage--hero a.ph:focus-visible{z-index:3}   /* lift a piece out of the pile */
+/* the pile is the visitor's to rearrange (Mia, 10 Oct 2026): drag a piece anywhere — press and hold first on touch,
+   so the page still scrolls — a click or tap still opens the project. Script at the end of the page. */
+.collage--hero .ph{cursor:grab;touch-action:pan-y pinch-zoom;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+.collage--hero .ph--lift{cursor:grabbing}
+.collage--hero .ph--lift img,.collage--hero .ph--lift video{transform:scale(1.04)}
 .ph{display:block;background:var(--ph);overflow:hidden;width:100%}
 .ph img{width:100%;height:100%;object-fit:cover;transition:transform .5s cubic-bezier(.19,1,.22,1)}
 .ph video{display:block;width:100%;height:100%;object-fit:cover;background:#000}
@@ -315,9 +320,11 @@ a.ph:active{opacity:.85}
   text-transform:uppercase;
 }
 .about__text p{font-size:var(--fs-body);line-height:1.34;text-transform:uppercase}
-/* the two paragraphs read as a lighter cut (Mia, 10 Oct 2026: only ABOUT ME and the services line stay bold).
-   Bebas Neue ships in one weight, so a hairline stroke in the paper colour thins every letter instead */
-.about__text p:not(.about__services){-webkit-text-stroke:.03em var(--paper)}
+/* the paragraphs and the services list read as a lighter cut (Mia, 10 Oct 2026: only ABOUT ME and the
+   "Services:" label stay bold). Bebas Neue ships in one weight, so a hairline stroke in the paper colour
+   thins every letter instead; the blue label switches it off */
+.about__text p{-webkit-text-stroke:.03em var(--paper)}
+.about__services strong{-webkit-text-stroke:0}
 .about__text h2+p{margin-top:1em}
 .about__text p+p{margin-top:.25em}
 .about__services{margin-top:auto;padding-top:3em}
@@ -693,6 +700,41 @@ a.ph{position:relative}
   if(hasIO&&!reduce){
     var io=new IntersectionObserver(function(es){es.forEach(function(e){var v=e.target;if(v.dataset.autoplay==='off')return;if(e.isIntersecting){v.play().catch(function(){});}else{v.pause();}});},{threshold:.35});
     vids.forEach(function(v){io.observe(v);});
+  }
+
+  /* The hero pile is the visitor's to rearrange (Mia, 10 Oct 2026): drag a piece anywhere and it stays where it is
+     dropped until the page reloads. With a mouse the drag starts at once; on touch the finger must hold still for a
+     moment first, so a swipe over the pile still scrolls the page. A plain click or tap still opens the project.
+     Positions are written in % of the pile so an arrangement survives a resize. */
+  var pile=document.querySelector('.collage--hero');
+  if(pile&&window.PointerEvent){
+    var z=10, cand=null, live=null, hold=null, swallow=false;
+    var lift=function(){ if(!cand)return; live=cand; cand=null; live.el.classList.add('ph--lift'); try{live.el.setPointerCapture(live.id);}catch(e){} };
+    var drop=function(){ if(hold){clearTimeout(hold);hold=null;} if(live){live.el.classList.remove('ph--lift'); try{live.el.releasePointerCapture(live.id);}catch(e){}} live=null; cand=null; };
+    pile.addEventListener('dragstart',function(e){e.preventDefault();});                    /* no ghost image / link drag */
+    pile.addEventListener('contextmenu',function(e){ if(cand||live)e.preventDefault(); });   /* no long-press menu on Android */
+    pile.addEventListener('touchmove',function(e){ if(live)e.preventDefault(); },{passive:false});   /* a lifted piece follows the finger, the page stays put */
+    pile.addEventListener('pointerdown',function(e){
+      var el=e.target.closest('.ph'); if(!el||(e.pointerType==='mouse'&&e.button!==0))return;
+      var r=pile.getBoundingClientRect(), b=el.getBoundingClientRect();
+      el.style.zIndex=++z;                                                                  /* whatever is touched comes to the front */
+      cand={el:el,id:e.pointerId,touch:e.pointerType==='touch',x:e.clientX,y:e.clientY,l:b.left-r.left,t:b.top-r.top,w:b.width,h:b.height,W:r.width,H:r.height,moved:false};
+      swallow=false;
+      if(cand.touch){ hold=setTimeout(function(){hold=null;lift();},280); } else { lift(); }
+    });
+    pile.addEventListener('pointermove',function(e){
+      if(cand&&cand.id===e.pointerId&&hold&&Math.hypot(e.clientX-cand.x,e.clientY-cand.y)>8){ clearTimeout(hold);hold=null;cand=null;return; }   /* the finger is scrolling, not holding */
+      if(!live||live.id!==e.pointerId)return;
+      var dx=e.clientX-live.x, dy=e.clientY-live.y;
+      if(!live.moved&&Math.hypot(dx,dy)<3)return;
+      live.moved=true;
+      var l=Math.max(-live.w/2,Math.min(live.W-live.w/2,live.l+dx));                      /* up to half a piece may hang off the sides */
+      var t=Math.max(0,Math.min(live.H-live.h,live.t+dy));                                 /* but it stays inside the pile top to bottom */
+      live.el.style.left=(l/live.W*100).toFixed(2)+'%'; live.el.style.top=(t/live.H*100).toFixed(2)+'%';
+    });
+    pile.addEventListener('pointerup',function(e){ if(live&&live.id===e.pointerId)swallow=live.moved||live.touch; drop(); });
+    pile.addEventListener('pointercancel',function(){ swallow=!!(live&&live.moved); drop(); });
+    pile.addEventListener('click',function(e){ if(swallow){e.preventDefault();swallow=false;} },true);   /* a drag is not a click */
   }
 })();
 </script>
